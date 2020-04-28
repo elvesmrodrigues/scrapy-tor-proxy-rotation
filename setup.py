@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="scrapy-tor-ip-rotator",
-    version="0.0.1",
+    version="0.0.3",
     author="Elves M. Rodrigues",
     author_email="elvesmateusrodrigues@gmail.com",
     description="Test upload",
