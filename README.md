@@ -3,7 +3,7 @@ Este módulo tem por finalidade permitir rotação de IPs ao [Scrapy](https://sc
 
 Esse pacote pode ser instalador via **pip**, por meio do comando:
 ```bash
-pip install ...
+pip install scrapy-tor-ip-rotator
 ```
 
 É necessário configurar o Tor:
