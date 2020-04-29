@@ -81,7 +81,7 @@ Após realizar essas configurações, já é possível integrar o Tor ao Scrapy.
         'tor_ip_rotator.middlewares.ProxyMiddleware': 90
     }
     ```
-    - Sinta-se a vontade para alterar o valor de **tor_ip_rotator.middlewares.ProxyMiddleware** de acordo com a documentação do Scrapy.
+    - Sinta-se a vontade para alterar o valor de **tor_ip_rotator.middlewares.ProxyMiddleware** por outro valor.
 - Habilite o funcionamento da extensão e defina o número de requisições a serem feitas por um mesmo IP do Tor:  
     ```python
     TOR_RENEW_IP_ENABLED = True
