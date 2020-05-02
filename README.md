@@ -56,9 +56,17 @@ Passos de instalação e configuração do **Privoxy**:
     ```bash
     sudo apt install privoxy
     ```
-- Configurá-lo para usar Tor: 
+- Pare sua execução:
     ```bash
-    echo "forward-socks5t / 127.0.0.1:9050 ." >> /etc/privoxy/config
+    sudo service privoxy stop
+    ```
+- Configurá-lo para usar Tor, abra seu arquivo de configuração:
+    ```bash
+    sudo nano /etc/privoxy/config
+    ```
+- Adicione as seguintes linhas:
+    ```bash
+    forward-socks5t / 127.0.0.1:9050 .
     ``` 
 - Inicie-o: 
     ```
