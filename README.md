@@ -15,17 +15,26 @@ pip install scrapy-tor-ip-rotator
     ```bash
     sudo service tor stop
     ```
-- Abra a porta de controle, exetudando o comando abaixo:
-    ```bash
-    sudo echo "ControlPort 9051" >> /etc/tor/torrc
-    ```
 - Gere uma senha de acesso (lembre-se dela, será necessária posteriormente):
     ```bash
-    sudo echo HashedControlPassword $(tor --hash-password "sua senha" | tail -n 1) >> /etc/tor/torrc
+    tor --hash-password "sua senha"
     ```
-- Reinicie-o:
+- O comando acima gerará um hash como o abaixo, copie-o:
     ```bash
-    sudo service tor restart
+    16:75928863A1C80E19600A03DB8AB2E733765FBFD229330A24536F3BA82E
+    ```
+- Acesse o arquivo de configuração do Tor:
+    ```bash
+    sudo nano /etc/tor/torrc
+    ```
+- Coloque os comandos abaixo:
+    ```bash
+    ControlPort 9051
+    HashedControlPassword <cole_aqui_o_hash_copiado>
+    ```
+- Reinicie o Tor:
+    ```bash
+    sudo service tor start
     ```
 
 É possível verificar o IP de sua máquina e comparar com o do Tor da seguinte forma:
