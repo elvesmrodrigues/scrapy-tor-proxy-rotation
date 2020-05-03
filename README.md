@@ -102,7 +102,7 @@ Após realizar essas configurações, já é possível integrar o Tor ao Scrapy.
 - Habilite o funcionamento da extensão, coloque a senha de configuração do Tor que criou passos atrás e defina o número de requisições a serem feitas por um mesmo IP do Tor:  
     ```python
     TOR_RENEW_IP_ENABLED = True
-    TOR_PASSWORD = #senha
+    TOR_PASSWORD = "sua senha"
     TOR_ITEMS_BY_IP = #número de requisições feitas em um mesmo endereço IP
     ```
 

@@ -43,5 +43,6 @@ class TorRenewIp(object):
             self.items_scraped = 0
             
             self.crawler.engine.pause()
-            self.tc.renew_ip()
+            if not self.tc.renew_ip():
+                raise Exception('FatalError: Falha ao encontrar novo IP')
             self.crawler.engine.unpause()
