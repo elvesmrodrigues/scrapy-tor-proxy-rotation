@@ -70,7 +70,7 @@ class TorController:
             try:
                 current_ip = self.get_tor_ip()
             except:
-                time.sleep(random.randint(5, 60))
+                time.sleep(random.randint(1, 10))
                 continue
 
             # Checks that within 7.5 seconds the IP has been changed
