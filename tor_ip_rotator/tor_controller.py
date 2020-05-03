@@ -63,14 +63,14 @@ class TorController:
             Returns False if the attempt was unsuccessful or True if the IP was successfully changed.
         '''
         tc_logging.debug('Alterando IP...')
-        # Makes up to 10 IP change attempts
-        for _ in range(10):
+        # Makes up to 30 IP change attempts
+        for _ in range(30):
             self.change_ip()
 
             try:
                 current_ip = self.get_tor_ip()
             except:
-                time.sleep(random.randint(1, 10))
+                time.sleep(random.randint(5, 60))
                 continue
 
             # Checks that within 7.5 seconds the IP has been changed
