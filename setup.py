@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="scrapy-tor-ip-rotator",
-    version="1.0.0",
+    version="1.0.2",
     author="Elves M. Rodrigues",
     author_email="elvesmateusrodrigues@gmail.com",
     description="Rotacionador de IP para o Scrapy via Tor",
@@ -20,7 +20,7 @@ setuptools.setup(
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
+        "Operating System :: Unix",
     ],
     python_requires='>=3.6',
 )
