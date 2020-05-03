@@ -1,6 +1,7 @@
 import random
 import requests
 import time
+import logging
 
 from stem import Signal
 from stem.control import Controller
@@ -14,6 +15,7 @@ logger.propagate = False
 # Site to get IP
 IP_CHECK_SERVICE = 'http://icanhazip.com/'
 
+tc_logging = logging.getLogger(__name__)
 
 class TorController:
     def __init__(self, control_port: int = 9051, password: str = 'my password', host: str = '127.0.0.1', port: int = 9050, allow_reuse_ip_after: int = 5):
@@ -60,7 +62,7 @@ class TorController:
            
             Returns False if the attempt was unsuccessful or True if the IP was successfully changed.
         '''
-
+        tc_logging.debug('Alterando IP...')
         # Makes up to 10 IP change attempts
         for _ in range(10):
             self.change_ip()
@@ -86,6 +88,8 @@ class TorController:
                     if len(self.used_ips) == self.allow_reuse_ip_after:
                         del self.used_ips[0]
                     self.used_ips.append(current_ip)
+                tc_logging.debug('IP alterado')
                 return True
-
+                
+        tc_logging.error('Falha ao alterar IP')
         return False
