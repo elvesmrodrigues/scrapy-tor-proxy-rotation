@@ -43,14 +43,14 @@ class TorController:
             return r.text.replace('\n','')
         raise Exception()
 
-    def change_ip(self):
+    def change_ip(self) -> None:
         '''Send IP change signal to Tor.'''
 
         with Controller.from_port(port=self.control_port) as controller:
             controller.authenticate(password=self.password)
             controller.signal(Signal.NEWNYM)
     
-    def renew_ip(self):
+    def renew_ip(self) -> bool:
         '''Change Tor's IP (what differs from this change_ip method is that change_ip does not guarantee that the IP has been changed or has been changed to the same).
            
             Returns False if the attempt was unsuccessful or True if the IP was successfully changed.
