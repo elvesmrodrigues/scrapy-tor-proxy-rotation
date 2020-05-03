@@ -1,14 +1,19 @@
 import random
 import requests
-import time 
+import time
 
-from stem import Signal 
+from stem import Signal
 from stem.control import Controller
+from stem.util.log import get_logger
 
 import os
 
+logger = get_logger()
+logger.propagate = False
+
 # Site to get IP
 IP_CHECK_SERVICE = 'http://icanhazip.com/'
+
 
 class TorController:
     def __init__(self, control_port: int = 9051, password: str = 'my password', host: str = '127.0.0.1', port: int = 9050, allow_reuse_ip_after: int = 5):
@@ -27,7 +32,7 @@ class TorController:
         self.allow_reuse_ip_after = allow_reuse_ip_after
         self.proxies = {'http':  f'socks5://{host}:{port}',
                         'https': f'socks5://{host}:{port}'}
-        
+
     def get_ip(self) -> str:
         '''Returns the current IP of the machine.'''
 
@@ -40,32 +45,32 @@ class TorController:
         '''Returns the current IP used by Tor.'''
         r = requests.get(IP_CHECK_SERVICE, proxies=self.proxies)
         if r.ok:
-            return r.text.replace('\n','')
+            return r.text.replace('\n', '')
         raise Exception()
 
-    def change_ip(self) -> None:
+    def change_ip(self):
         '''Send IP change signal to Tor.'''
 
         with Controller.from_port(port=self.control_port) as controller:
             controller.authenticate(password=self.password)
             controller.signal(Signal.NEWNYM)
-    
-    def renew_ip(self) -> bool:
+
+    def renew_ip(self):
         '''Change Tor's IP (what differs from this change_ip method is that change_ip does not guarantee that the IP has been changed or has been changed to the same).
            
             Returns False if the attempt was unsuccessful or True if the IP was successfully changed.
         '''
-        
+
         # Makes up to 10 IP change attempts
         for _ in range(10):
             self.change_ip()
-            
+
             try:
                 current_ip = self.get_tor_ip()
             except:
                 time.sleep(random.randint(1, 10))
                 continue
-            
+
             # Checks that within 7.5 seconds the IP has been changed
             used_time = 0
             while used_time < 15:
@@ -74,7 +79,7 @@ class TorController:
                     time.sleep(.5)
                 else:
                     break
-            
+
             if used_time < 15:
                 # Controls IP reuse
                 if self.allow_reuse_ip_after > 0:
@@ -82,5 +87,5 @@ class TorController:
                         del self.used_ips[0]
                     self.used_ips.append(current_ip)
                 return True
-            
-        return False 
+
+        return False
