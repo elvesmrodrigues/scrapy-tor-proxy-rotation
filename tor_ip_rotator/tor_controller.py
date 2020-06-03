@@ -1,95 +1,95 @@
-import random
-import requests
-import time
 import logging
+import random
+import time
+import requests
 
 from stem import Signal
 from stem.control import Controller
 from stem.util.log import get_logger
 
-import os
-
 logger = get_logger()
 logger.propagate = False
 
-# Site to get IP
+# site to get ip
 IP_CHECK_SERVICE = 'http://icanhazip.com/'
 
-tc_logging = logging.getLogger(__name__)
-
 class TorController:
-    def __init__(self, control_port: int = 9051, password: str = 'my password', host: str = '127.0.0.1', port: int = 9050, allow_reuse_ip_after: int = 5):
-        '''Creates a new instance of TorController.
+    def __init__(self, allow_reuse_ip_after: int = 10):
+        """Creates a new instance of TorController.
+        
         Keywords arguments:
-        control_port -- Standard Tor control port (default 9051)
-        password -- Password to control Tor (default 'my password')
-        host -- Tor server default IP address (default '127.0.0.1')
-        port -- Standard Tor server port (default 9050)
-        allow_reuse_ip_after -- When an already used IP can be used again. If 0, there will be no IP reuse control. (default 5). 
-        '''
+            allow_reuse_ip_after -- When an already used IP can be used again. If 0, there will be no IP reuse control. (default 10). 
+        """
 
-        self.control_port = control_port
-        self.password = password
-        self.used_ips = list()
         self.allow_reuse_ip_after = allow_reuse_ip_after
-        self.proxies = {'http':  f'socks5://{host}:{port}',
-                        'https': f'socks5://{host}:{port}'}
+
+        self.used_ips = list()
+        self.proxies = {'http':  'socks5://127.0.0.1:9050',
+                        'https': 'socks5://127.0.0.1:9050'}
+
+        self.renew_ip()
 
     def get_ip(self) -> str:
-        '''Returns the current IP of the machine.'''
+        """Returns the current IP used by Tor."""
 
-        r = requests.get(IP_CHECK_SERVICE)
-        if r.ok:
+        with requests.Session() as session:
+            r = session.get(IP_CHECK_SERVICE, proxies = self.proxies)
+            
+            if r.ok:
+                session.close()
+                return r.text.replace('\n', '')
             return r.text.replace('\n', '')
-        raise Exception()
 
-    def get_tor_ip(self) -> str:
-        '''Returns the current IP used by Tor.'''
-        r = requests.get(IP_CHECK_SERVICE, proxies=self.proxies)
-        if r.ok:
-            return r.text.replace('\n', '')
-        raise Exception()
+        return ''
 
-    def change_ip(self):
-        '''Send IP change signal to Tor.'''
+    def change_ip(self) -> None:
+        """Send IP change signal to Tor."""
 
-        with Controller.from_port(port=self.control_port) as controller:
-            controller.authenticate(password=self.password)
+        with Controller.from_port(port=9051) as controller:
+            controller.authenticate()
             controller.signal(Signal.NEWNYM)
 
-    def renew_ip(self):
-        '''Change Tor's IP (what differs from this change_ip method is that change_ip does not guarantee that the IP has been changed or has been changed to the same).
+    def renew_ip(self) -> None:
+        """Change Tor's IP
            
-            Returns False if the attempt was unsuccessful or True if the IP was successfully changed.
-        '''
-        tc_logging.debug('Alterando IP...')
-        # Makes up to 30 IP change attempts
-        for _ in range(30):
+        Returns the new IP or '', if is not possible to change the IP.
+        """
+        new_ip = None
+
+        # Try to change the IP 10 times
+        for _ in range(10):
             self.change_ip()
 
-            try:
-                current_ip = self.get_tor_ip()
-            except:
-                time.sleep(random.randint(1, 10))
-                continue
-
-            # Checks that within 7.5 seconds the IP has been changed
-            used_time = 0
-            while used_time < 15:
-                if current_ip in self.used_ips:
-                    used_time += 1
+            new_ip = self.get_ip() 
+            
+            # Waits for possible IP change
+            waiting = .0
+            while waiting <= 30:
+                if new_ip in self.used_ips:
+                    waiting += .5
                     time.sleep(.5)
+
+                    new_ip = self.get_ip()
+
+                    if not new_ip:
+                        break
+                
                 else:
                     break
+            
+            # If we can recover the IP, check if it has already been used
+            if new_ip:
 
-            if used_time < 15:
                 # Controls IP reuse
                 if self.allow_reuse_ip_after > 0:
                     if len(self.used_ips) == self.allow_reuse_ip_after:
                         del self.used_ips[0]
-                    self.used_ips.append(current_ip)
-                tc_logging.debug('IP alterado')
-                return True
-                
-        tc_logging.error('Falha ao alterar IP')
-        return False
+                    self.used_ips.append(new_ip)
+
+                return new_ip
+
+            # Wait a random time to try again
+            time.sleep(random.randint(3,15))
+
+        # Could not change IP
+        return '' 
