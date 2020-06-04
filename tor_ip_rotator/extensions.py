@@ -10,7 +10,7 @@ import time
 from scrapy import signals 
 from scrapy.exceptions import NotConfigured
 
-from .tor_controller import TorController
+from tor_ip_rotator.tor_controller import TorController
 
 logger = logging.getLogger(__name__)
 
