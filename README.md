@@ -116,3 +116,6 @@ TOR_IPROTATOR_ALLOW_REUSE_IP_AFTER = #
 ```
 
 Um número grande demais pode tornar mais lento recuperar um novo IP para uso ou nem encontrar. Se o valor for 0, não haverá registro de IPs usados.
+
+## TO-DO
+- Teste de unidade 
