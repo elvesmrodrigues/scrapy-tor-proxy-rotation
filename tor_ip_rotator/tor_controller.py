@@ -63,17 +63,17 @@ class TorController:
             new_ip = self.get_ip() 
             
             # Waits for possible IP change
-            waiting = .0
+            waiting = 0
             while waiting <= 30:
                 if new_ip in self.used_ips:
-                    waiting += .5
-                    time.sleep(.5)
+                    waiting += 2.5
+                    time.sleep(2.5)
 
                     new_ip = self.get_ip()
 
                     if not new_ip:
                         break
-                
+
                 else:
                     break
             
@@ -89,7 +89,7 @@ class TorController:
                 return new_ip
 
             # Wait a random time to try again
-            time.sleep(random.randint(3,15))
+            time.sleep(random.randint(5,30))
 
         # Could not change IP
         return '' 

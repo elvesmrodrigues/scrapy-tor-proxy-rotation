@@ -1,11 +1,11 @@
-# scrapy-tor-ip-rotator
+# scrapy-tor-proxy-rotation
 Este módulo tem por finalidade permitir rotação de IPs ao [Scrapy](https://scrapy.org/) via Tor.
 
 ## Instalação
 
 Maneira simples de instalação, via **pip**:
 ```bash
-pip install scrapy-tor-ip-rotator
+pip install scrapy-tor-proxy-rotation
 ```
 
 ## Configurando Tor
@@ -90,24 +90,19 @@ O IP mostrado nos dois passos acima deve ser o mesmo.
 ## Uso
 
 Após realizar essas configurações, já é possível integrar o Tor ao Scrapy.
-- Ative a extensão e configure o middleware no arquivo de configuração de seu projeto (**settings.py**):
+- Configure o middleware no arquivo de configuração de seu projeto (**settings.py**):
     ```python
-    EXTENSIONS = {
-    ...,
-        'tor_ip_rotator.extensions.TorRenewIp': 1,
-    }
-
     DOWNLOADER_MIDDLEWARES = {
         ...,
         'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
-        'tor_ip_rotator.middlewares.ProxyMiddleware': 100
+        'tor_ip_rotator.middlewares.TorProxyMiddleware': 100
     }
     ```
     
 - Habilite o uso da extensão:  
     ```python
     TOR_IPROTATOR_ENABLED = True
-    TOR_IPROTATOR_ITEMS_BY_IP = #número de requisições feitas em um mesmo endereço IP
+    TOR_IPROTATOR_CHANGE_AFTER = #número de requisições feitas em um mesmo endereço IP
     ```
 Por padrão, um IP poderá ser reutilizado após 10 usos de outros. Esse valor pode ser alterado pela variável TOR_IPROTATOR_ALLOW_REUSE_IP_AFTER, como abaixo:
 
@@ -116,6 +111,3 @@ TOR_IPROTATOR_ALLOW_REUSE_IP_AFTER = #
 ```
 
 Um número grande demais pode tornar mais lento recuperar um novo IP para uso ou nem encontrar. Se o valor for 0, não haverá registro de IPs usados.
-
-## TO-DO
-- Teste de unidade 

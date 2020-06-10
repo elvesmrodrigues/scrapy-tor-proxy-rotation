@@ -1,1 +1,2 @@
 from tor_ip_rotator.tor_controller import TorController
+from tor_ip_rotator.middlewares import TorProxyMiddleware
