@@ -46,7 +46,6 @@ You can check your machine's IP and compare it with Tor's by doing the following
 
 - To see your machine's IP:
     ```bash
-    ```bash
     curl http://icanhazip.com/
     ```
 - To see Tor's IP:
