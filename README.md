@@ -1,96 +1,102 @@
 # scrapy-tor-proxy-rotation
-Este módulo tem por finalidade permitir rotação de IPs ao [Scrapy](https://scrapy.org/) via Tor.
+The purpose of this module is to allow rotation of IPs to [Scrapy](https://scrapy.org/) via Tor.
 
-## Instalação
+## Installation
 
-Maneira simples de instalação, via **pip**:
+Simple way to install, via **pip**:
+
 ```bash
 pip install scrapy-tor-proxy-rotation
 ```
 
-## Configurando Tor
-É necessário configurar o **Tor**. Primeiramente, instale-o:
+## Configuring Tor
+
+You need to configure **Tor**. First, install it:
 
 ```bash
 sudo apt-get install tor
 ```
 
-Pare sua execução para realizar configurações:
+Stop its execution to perform configuration:
 
 ```bash
 sudo service tor stop
 ```
 
-Abra seu arquivo de configuração como root, disponível em */etc/tor/torrc*, por exemplo, usando o nano:
+Open your configuration file as root, available at `/etc/tor/torrc`, for example using nano:
 
 ```bash
 sudo nano /etc/tor/torrc
 ```
-Coloque as linhas abaixo e salve:
+
+Insert the lines below and save:
 
 ```
 ControlPort 9051
 CookieAuthentication 0
 ```
 
-Reinicie o Tor:
+Restart Tor:
 
 ```bash
 sudo service tor start
 ```
 
+You can check your machine's IP and compare it with Tor's by doing the following:
 
-É possível verificar o IP de sua máquina e comparar com o do Tor da seguinte forma:
-- Para ver seu IP:
+- To see your machine's IP:
+    ```bash
     ```bash
     curl http://icanhazip.com/
     ```
-- Para ver o IP do TOR:
+- To see Tor's IP:
     ```bash
     torify curl http://icanhazip.com/   
     ```
 
-Proxy do Tor não são suportados pelo Scrapy. Para contornar esse problema, é necessário o uso de um intermediário, nesse caso o **[Privoxy](https://www.privoxy.org/)**. 
+Tor proxies are not supported by Scrapy. To get around this problem, it is necessary to use an intermediary, in this case **[Privoxy](https://www.privoxy.org/)**.
 
-> O servidor proxy do Tor se encontra, por padrão, no endereço 127.0.0.1:9050
+> The Tor proxy server is by default at 127.0.0.1:9050
 
-## Instalação e configuração do **Privoxy**:
-- Instalar: 
+## Installing and configuring **Privoxy**:
+- Install: 
     ```bash
     sudo apt install privoxy
     ```
-- Pare sua execução:
+- Stop its execution:
     ```bash
     sudo service privoxy stop
     ```
-- Configurá-lo para usar Tor, abra seu arquivo de configuração:
+- Configure it to use TOr, open its configuration file:
     ```bash
     sudo nano /etc/privoxy/config
     ```
-- Adicione as seguintes linhas:
+- Add the following lines:
     ```bash
     forward-socks5t / 127.0.0.1:9050 .
     ``` 
-- Inicie-o: 
+- Start it up: 
     ```
     service privoxy start
     ```
 
-> Por padrão, privoxy executará no endereço 127.0.0.1:8118 
+> By default, privoxy will run at the address 127.0.0.1:8118 
 
-Teste: 
+Test: 
 ```bash
 torify curl http://icanhazip.com/
 ```
 ```bash
 curl -x 127.0.0.1:8118 http://icanhazip.com/
 ```
-O IP mostrado nos dois passos acima deve ser o mesmo.
 
-## Uso
+The IP shown in the two steps above must be the same.
 
-Após realizar essas configurações, já é possível integrar o Tor ao Scrapy.
-- Configure o middleware no arquivo de configuração de seu projeto (**settings.py**):
+## How to use
+
+After you have made these settings, you can now integrate Tor with Scrapy.
+
+- Configure the middleware in your project's configuration file (**settings.py**):
     ```python
     DOWNLOADER_MIDDLEWARES = {
         ...,
@@ -99,15 +105,16 @@ Após realizar essas configurações, já é possível integrar o Tor ao Scrapy.
     }
     ```
     
-- Habilite o uso da extensão:  
+- Enable the use of extension:  
     ```python
     TOR_IPROTATOR_ENABLED = True
-    TOR_IPROTATOR_CHANGE_AFTER = #número de requisições feitas em um mesmo endereço IP
+    TOR_IPROTATOR_CHANGE_AFTER = #number of requests made on the same Tor's IP address
     ```
-Por padrão, um IP poderá ser reutilizado após 10 usos de outros. Esse valor pode ser alterado pela variável TOR_IPROTATOR_ALLOW_REUSE_IP_AFTER, como abaixo:
+
+By default, an IP can be reused after 10 other uses. This value can be changed by the variable TOR_IPROTATOR_ALLOW_REUSE_IP_AFTER, as below:
 
 ```python
-TOR_IPROTATOR_ALLOW_REUSE_IP_AFTER = #
+TOR_IPROTATOR_ALLOW_REUSE_IP_AFTER = 0 #another integer value
 ```
 
-Um número grande demais pode tornar mais lento recuperar um novo IP para uso ou nem encontrar. Se o valor for 0, não haverá registro de IPs usados.
+A number too large for TOR_IPROTATOR_ALLOW_REUSE_IP_AFTER may make it slower to retrieve a new IP for use or not find one at all. If the value is 0, there will be no record of used IPs.
