@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="scrapy-tor-proxy-rotation",
-    version="0.0.1",
+    version="0.0.2",
     author="Elves M. Rodrigues",
     author_email="elvesmateusrodrigues@gmail.com",
-    description="Rotacionador de IP para o Scrapy via Tor",
+    description="IP Rotator for Scrapy via Tor",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/elvesrodrigues/scrapy-tor-proxy-rotation",
