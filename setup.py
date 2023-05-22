@@ -15,7 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=[
         'pysocks==1.7.1',
-        'requests==2.23.0',
+        'requests==2.31.0',
         'stem==1.8.0',
     ],
     classifiers=[
